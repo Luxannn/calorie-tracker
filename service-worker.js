@@ -1,7 +1,9 @@
-const CACHE_NAME = 'macrotrack-v1';
+const CACHE_NAME = 'macrotrack-v2';
 const ASSETS = [
   '/',
   '/index.html',
+  '/style.css',
+  '/app.js',
   '/manifest.json',
   'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js'
 ];
