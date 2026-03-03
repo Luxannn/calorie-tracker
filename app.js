@@ -725,6 +725,23 @@ function clearAllData(){
 /* ============================================================
    INIT
    ============================================================ */
+let lastRenderedDate = '';
+
+function checkDateAndRefresh(){
+  const now = todayKey();
+  if(lastRenderedDate && lastRenderedDate !== now){
+    // Date changed — re-render the active page
+    lastRenderedDate = now;
+    const activePage = document.querySelector('.page.active');
+    if(activePage){
+      const id = activePage.id;
+      if(id==='pageDashboard') renderDashboard();
+      else if(id==='pageHistory') renderHistory();
+    }
+  }
+  lastRenderedDate = now;
+}
+
 (function init(){
   if(!isDark()) document.body.classList.add('light');
   migrateOldLogs();
@@ -735,5 +752,17 @@ function clearAllData(){
   document.getElementById('builderSearch').addEventListener('input',renderBuilderFoods);
   document.getElementById('gramInput').addEventListener('input',updateGramPreview);
   document.getElementById('foodSearch').addEventListener('input',renderMyFoods);
+
+  // Track current date for day-change detection
+  lastRenderedDate = todayKey();
   renderDashboard();
+
+  // Re-render when app comes back to foreground (e.g. next morning)
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden) checkDateAndRefresh();
+  });
+  window.addEventListener('focus', checkDateAndRefresh);
+
+  // Periodic check every 60s to catch midnight while app is open
+  setInterval(checkDateAndRefresh, 60000);
 })();
